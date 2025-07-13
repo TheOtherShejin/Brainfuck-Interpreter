@@ -1,87 +1,32 @@
-#include <iostream>
-#include <vector>
+#include "Interpreter.h"
+#include "ArgumentParser.h"
+#include <fstream>
 
-class Interpreter {
-public:
+std::string GetCode(std::string filepath) {
+	std::fstream file(filepath);
 	std::string code;
-	std::vector<char> data;
-	int dataPointer = 0;
-	int instructionPointer = 0;
-	int memorySize;
 
-	Interpreter(unsigned int memorySize) : memorySize(memorySize) {
-		data = std::vector<char>(memorySize, 0);
+	std::string line;
+	while (std::getline(file, line)) {
+		line = line.substr(0, line.find_first_of('/'));
+		line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end());
+		if (line[0] == '/' || line == "") continue;
+
+		code += line;
 	}
 
-	void Run(std::string code) {
-		Reset();
-		this->code = code;
-		while (instructionPointer != code.length()) {
-			char command = code[instructionPointer];
-			RunCommand(command);
-			instructionPointer++;
-		}
-	}
+	return code;
+}
 
-	void Reset() {
-		dataPointer = 0;
-		instructionPointer = 0;
-		data = std::vector<char>(memorySize, 0);
-	}
+int main(int argc, char* argv[]) {
+	Arguments arguments = ArgumentParser(argc, argv);
 
-	void RunCommand(char command) {
-		int bracketCount;
-		switch (command)
-		{
-		case '>':
-			dataPointer = (dataPointer+1) % data.size();
-			break;
-		case '<':
-			dataPointer = (dataPointer - 1) % data.size();
-			break;
-		case '+':
-			data[dataPointer]++;
-			break;
-		case '-':
-			data[dataPointer]--;
-			break;
-		case '.':
-			std::cout << char(data[dataPointer]);
-			break;
-		case ',':
-			std::cout << "\n>>> ";
-			int input;
-			std::cin >> input;
-			data[dataPointer] = input;
-			break;
-		case '[':
-			if (data[dataPointer] != 0) break;
-			bracketCount = 1;
-			while (bracketCount != 0) {
-				instructionPointer++;
-				char command = code[instructionPointer];
-				if (command == '[') bracketCount++;
-				else if (command == ']') bracketCount--;
-			}
-			break;
-		case ']':
-			if (data[dataPointer] == 0) break;
-			bracketCount = -1;
-			while (bracketCount != 0) {
-				instructionPointer--;
-				char command = code[instructionPointer];
-				if (command == '[') bracketCount++;
-				else if (command == ']') bracketCount--;
-			}
-			break;
-		}
-	}
-};
+	std::string code = GetCode(arguments.inputFilePath);
 
-int main() {
-	Interpreter interp(64);
-	std::string code = ">++++++++[<+++++++++>-]<.>++++[<+++++++>-]<+.+++++++..+++.>>++++++[<+++++++>-]<++.------------.>++++++[<+++++++++>-]<+.<.+++.------.--------.>>>++++[<++++++++>-]<+.";
-	interp.Run(code);
+	Interpreter interpreter(arguments.memorySize);
+	interpreter.Run(code);
+
+	std::cout << "\nOutput file saved to path: " << arguments.outputFilePath << '\n';
 
 	return 0;
 }
