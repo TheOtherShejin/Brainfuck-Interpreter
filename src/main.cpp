@@ -26,7 +26,11 @@ int main(int argc, char* argv[]) {
 	Interpreter interpreter(arguments.memorySize);
 	interpreter.Run(code);
 
-	std::cout << "\nOutput file saved to path: " << arguments.outputFilePath << '\n';
+	if (arguments.outputFilePath != "") {
+		std::ofstream outputFile(arguments.outputFilePath);
+		outputFile << interpreter.logHistory;
+		std::cout << "\nOutput file saved to path: " << arguments.outputFilePath << '\n';
+	}
 
 	return 0;
 }

@@ -1,6 +1,5 @@
 #include "Interpreter.h"
 
-
 Interpreter::Interpreter(unsigned int memorySize) : memorySize(memorySize) {
 	data = std::vector<char>(memorySize, 0);
 }
@@ -23,8 +22,7 @@ void Interpreter::Reset() {
 
 void Interpreter::RunCommand(char command) {
 	int bracketCount;
-	switch (command)
-	{
+	switch (command) {
 	case '>':
 		dataPointer = (dataPointer + 1) % data.size();
 		break;
@@ -38,6 +36,7 @@ void Interpreter::RunCommand(char command) {
 		data[dataPointer]--;
 		break;
 	case '.':
+		logHistory += char(data[dataPointer]);
 		std::cout << char(data[dataPointer]);
 		break;
 	case ',':

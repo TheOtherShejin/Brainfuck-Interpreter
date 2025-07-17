@@ -9,6 +9,7 @@ private:
 public:
 	std::string code;
 	std::vector<char> data;
+	std::string logHistory;
 	int dataPointer = 0;
 	int instructionPointer = 0;
 	int memorySize;
