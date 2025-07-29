@@ -6,6 +6,11 @@ std::string GetCode(std::string filepath) {
 	std::fstream file(filepath);
 	std::string code;
 
+	if (!file.is_open()) {
+		std::cout << "[ERROR] Cannot open file at: " << filepath << '\n';
+		return code;
+	}
+
 	std::string line;
 	while (std::getline(file, line)) {
 		line = line.substr(0, line.find_first_of('/'));
@@ -21,7 +26,10 @@ std::string GetCode(std::string filepath) {
 int main(int argc, char* argv[]) {
 	Arguments arguments = ArgumentParser(argc, argv);
 
+	if (arguments.error) return 0;
+
 	std::string code = GetCode(arguments.inputFilePath);
+	if (code == "") return 0;
 
 	Interpreter interpreter(arguments.memorySize);
 	interpreter.Run(code);

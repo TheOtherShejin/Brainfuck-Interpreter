@@ -41,7 +41,7 @@ void Interpreter::RunCommand(char command) {
 		break;
 	case ',':
 		std::cout << "\n>>> ";
-		int input;
+		char input;
 		std::cin >> input;
 		data[dataPointer] = input;
 		break;
